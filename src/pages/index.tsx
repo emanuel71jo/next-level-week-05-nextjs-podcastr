@@ -7,6 +7,8 @@ import { api } from "../services/axios";
 import { convertDurationToTimeString } from "../utils/convertDurationToTimeString";
 
 import styles from "./home.module.scss";
+import { useContext } from "react";
+import { PlayerContext } from "../contexts/PlayContext";
 
 interface Episode {
   id: string;
@@ -25,6 +27,8 @@ type HomeProps = {
 };
 
 export default function Home({ lastestEpisodes, allEpisodes }: HomeProps) {
+  const { play } = useContext(PlayerContext);
+
   return (
     <div className={styles.homepage}>
       <section className={styles.latestEpisodes}>
@@ -50,7 +54,7 @@ export default function Home({ lastestEpisodes, allEpisodes }: HomeProps) {
                 <span>{episode.durationAsString}</span>
               </div>
 
-              <button type="button">
+              <button type="button" onClick={() => play(episode)}>
                 <img src="/play-green.svg" alt="Tocar episódio" />
               </button>
             </li>
