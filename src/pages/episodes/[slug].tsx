@@ -7,6 +7,8 @@ import { api } from "../../services/axios";
 import { convertDurationToTimeString } from "../../utils/convertDurationToTimeString";
 
 import styles from "./episode.module.scss";
+import { usePlayer } from "../../hooks/usePlayer";
+import Head from "next/head";
 
 interface Episode {
   id: string;
@@ -25,8 +27,14 @@ type EpisodeProps = {
 };
 
 export default function Episode({ episode }: EpisodeProps) {
+  const { play } = usePlayer();
+
   return (
     <div className={styles.episode}>
+      <Head>
+        <title>{episode.title}</title>
+      </Head>
+
       <div className={styles.thumbnailContainer}>
         <Link href="/">
           <button type="button">
@@ -39,7 +47,7 @@ export default function Episode({ episode }: EpisodeProps) {
           src={episode.thumbnail}
           objectFit="cover"
         />
-        <button type="button">
+        <button type="button" onClick={() => play(episode)}>
           <img src="/play.svg" alt="Tocar episódio" />
         </button>
 
@@ -70,7 +78,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   const paths = data.map((episode) => ({
     params: {
-      slug: data.id,
+      slug: episode.id,
     },
   }));
 
@@ -83,7 +91,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { slug } = ctx.params;
 
-  const { data } = await api.get(`/episodes/${slug}`);
+  const { data } = await api.get(`/episodes/${String(slug)}`);
 
   const episode = {
     id: data.id,
